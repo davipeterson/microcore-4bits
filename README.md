@@ -2,7 +2,7 @@
 
 **MicroCore** is a multi-cycle, educational 4-bit microarchitecture designed for the **DE10-Lite FPGA** board (Intel MAX 10). It implements a custom instruction set controlled by a Finite State Machine (FSM) to demonstrate fundamental concepts of computer architecture, such as instruction fetching, decoding, arithmetic/logic operations, and register manipulation. It's also the final project for the Digital Electronics 2 course (ELTD12A) at UNIFEI - Universidade Federal de Itajubá.
 
-![DE10-Lite Board](assets/DE10-Lite.png)
+![DE10-Lite Board](assets/DE10-Lite.PNG)
 
 ## 📌 Features
 
@@ -16,9 +16,8 @@
 
 ```text
 ├── assets/          # Diagrams, FSM viewer images, and visual documentation
-├── modules/         # Verilog source files (.v) and Project Files (.qpf, .qsf)
+├── modules/         # Verilog source files (.v), Project Files (.qpf, .qsf) and ROM initialization file (Test Program)
 ├── pinouts/         # Pin assignment documentation
-├── rom.txt          # ROM initialization file (Test Program)
 ├── LICENSE          # MIT License
 └── README.md        # Project documentation
 ```
@@ -33,7 +32,7 @@
 ## ⚙️ Architecture
 The system consists of a Program Counter (PC), a ROM for program storage, an Instruction Register (IR), a Register File (4x4-bit), and a Synchronous ALU.
 
-# Instruction Set
+### Instruction Set
 The CPU supports the following instructions:
 
 - **LDR:** Load immediate value into a register.
@@ -42,10 +41,53 @@ The CPU supports the following instructions:
 
 - **AND / OR / XOR / NAND:** Bitwise logical operations.
 
-# FSM Diagram
+### FSM Diagram
 The control logic is governed by the following state machine:
 
-![fsm_diagram](assets/fsm_diagram.png)
+![fsm_diagram](assets/fsm_diagram.PNG)
+
+### 🔄 FSM Logic Explanation
+
+The Finite State Machine (FSM) acts as the control unit, cycling through 7 distinct states to execute instructions:
+
+1.  **FETCH**: The system reads the instruction from ROM at the current PC address.
+2.  **DECODE (Transitions)**: Based on the mnemonic bits (`mnm`), the FSM decides the next path:
+    * `00` → **LDR** (Load Immediate)
+    * `10` or `11` → **ARIT** (Arithmetic)
+    * `01` → **LOGIC** (Logical Operations)
+3.  **Execution States**:
+    * **LDR**: Enables writing the immediate value directly into the target register.
+    * **ARIT**: Selects operands from the Register File and enables the ALU for calculation.
+    * **LOGIC**: Similar to ARIT, but sets up the ALU for logical operations (AND, OR, XOR, NAND).
+4.  **Write Back States**:
+    * **WB_RD**: Writes the ALU result into the destination register specified by the instruction.
+    * **WB_R0**: Writes the logical operation result into register `R0` (fixed destination for logic ops).
+5.  **PC**: Increments the Program Counter to point to the next instruction, restarting the cycle.
+
+### 🧩 Module Integration
+
+The **Module Integration** describes how independent hardware blocks interact to form the complete MicroCore processor. The `top_module.v` file connects these components via a central datapath:
+
+![Module Integration Diagram](assets/modules_integration.PNG)
+
+### Data Flow Breakdown
+1.  **Instruction Fetch**:
+    - The **Program Counter (PC)** sends the current address (`addr_bus`) to the **ROM**.
+    - The **ROM** outputs the 8-bit instruction (`data_bus`) to the **Instruction Register (IR)**.
+
+2.  **Decoding & Routing**:
+    - The **IR** splits the instruction into opcode (for the FSM) and operands.
+    - A **Demux1x2** directs the lower 4 bits:
+        - For `LDR` instructions: Sends immediate values to the Register File write data input.
+        - For `ALU` instructions: Sends register addresses to the Register File read ports.
+
+3.  **Execution & Storage**:
+    - The **Register File** outputs two 4-bit values (`operando_A`, `operando_B`) to the **ALU**.
+    - The **ALU** processes these values based on the operation selector and outputs the `result`.
+    - A **Mux2x1** selects the final data source (Immediate value or ALU Result) to be written back into the Register File.
+
+4.  **Control Plane**:
+    - The **FSM** orchestrates this entire flow. It monitors `ack` (handshake) signals and asserts enable signals (`ena_pc`, `ena_wr`, `ena_ula`) to ensure data moves through the pipeline at the correct clock cycles.
 
 ## 🚀 How to Run
 
