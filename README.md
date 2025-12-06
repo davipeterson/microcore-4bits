@@ -97,7 +97,7 @@ The **Module Integration** describes how independent hardware blocks interact to
     ```
 2.  Open the project in **Intel Quartus Prime** (open the `.qpf` file inside the `modules` folder).
 3.  Ensure `rom.txt` is in the correct path relative to the simulation/synthesis context.
-4.  The pin assignments should load automatically via the `.qsf` file. If not, make sure to import the `microcore.csv` file inside the `pinouts` folder.
+4.  The pin assignments should load automatically via the `.qsf` file. If not, make sure to import it from the `microcore.csv` file inside the `pinouts` folder.
 5.  Compile the design (`Start Compilation`).
 6.  Program the FPGA using the **USB-Blaster**.
 
