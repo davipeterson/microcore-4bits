@@ -1,6 +1,6 @@
 # MicroCore - Educational 4-bit Microarchitecture
 
-**MicroCore** is a multi-cycle, educational 4-bit microarchitecture designed for the **DE10-Lite FPGA** board (Intel MAX 10). It implements a custom instruction set controlled by a Finite State Machine (FSM) to demonstrate fundamental concepts of computer architecture, such as instruction fetching, decoding, arithmetic/logic operations, and register manipulation. It's also the final project for the Digital Electronics 2 course (ELTD12A) at UNIFEI - Universidade Federal de Itajubá.
+**MicroCore** is a multi-cycle, educational 4-bit microarchitecture designed for the **DE10-Lite FPGA** board (Intel MAX 10). It implements a custom instruction set controlled by a Finite State Machine (FSM) to demonstrate fundamental concepts of computer architecture, such as instruction fetching, decoding, arithmetic/logic operations, and register manipulation. It's also the final project for the Digital Electronics 2 course (ELTD12A) at UNIFEI - Federal University of Itajubá.
 
 ![DE10-Lite Board](assets/DE10-Lite.PNG)
 
